@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta charset="UTF-8" />
   <title>MakeUp Lagunilla</title>
   <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet" />
@@ -113,6 +114,25 @@
     .carrito-item button:hover {
       background: #9c8c7d;
     }
+#productos-contenedor {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 columnas para PC */
+  gap: 25px;
+}
+
+/* Tablets */
+@media (max-width: 900px) {
+  #productos-contenedor {
+    grid-template-columns: repeat(2, 1fr); /* 2 columnas para tablets */
+  }
+}
+
+/* Celulares */
+@media (max-width: 600px) {
+  #productos-contenedor {
+    grid-template-columns: 1fr; /* 1 columna para celulares */
+  }
+}
 
     /* Buscador */
 
@@ -850,3 +870,4 @@
   </script>
 </body>
 </html>
+
