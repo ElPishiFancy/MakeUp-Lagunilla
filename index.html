@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>MakeUp Lagunilla</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f2e3d5;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background-color: white;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      font-family: 'Dancing Script', cursive;
+      font-size: 2.5em;
+      color: #b7a99a;
+      margin: 0;
+    }
+
+    .icono-carrito {
+      position: relative;
+      cursor: pointer;
+      margin-left: 20px;
+    }
+
+    .icono-carrito img {
+      width: 30px;
+    }
+
+    #contador-carrito {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: #b7a99a;
+      color: white;
+      border-radius: 50%;
+      padding: 2px 7px;
+      font-size: 0.8em;
+      font-weight: bold;
+      user-select: none;
+    }
+
+    #carrito-container {
+      position: absolute;
+      top: 50px;
+      right: 0;
+      background: white;
+      border: 1px solid #ccc;
+      width: 300px;
+      max-height: 400px;
+      overflow-y: auto;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      padding: 10px;
+      display: none;
+      border-radius: 10px;
+      z-index: 1000;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .carrito-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .carrito-item img {
+      width: 40px;
+      height: 40px;
+      object-fit: cover;
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+
+    .carrito-item span {
+      flex: 1;
+      font-size: 0.95em;
+    }
+
+    .carrito-item input {
+      width: 40px;
+      margin: 0 5px;
+      text-align: center;
+      font-size: 1em;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    .carrito-item button {
+      background: #b7a99a;
+      border: none;
+      color: white;
+      border-radius: 3px;
+      cursor: pointer;
+      padding: 2px 6px;
+      transition: background 0.3s ease;
+      font-weight: bold;
+    }
+    .carrito-item button:hover {
+      background: #9c8c7d;
+    }
+
+    /* Buscador */
+
+    #buscador-container {
+      position: relative;
+      margin-left: 20px;
+      display: flex;
+      align-items: center;
+    }
+
+    #btn-lupa {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 1.5em;
+      color: #b7a99a;
+      transition: color 0.3s ease;
+      padding: 5px;
+      user-select: none;
+    }
+
+    #btn-lupa:hover {
+      color: #9c8c7d;
+    }
+
+    #buscador {
+      width: 0;
+      opacity: 0;
+      padding: 5px 10px;
+      font-size: 1em;
+      border-radius: 20px;
+      border: 1px solid #ccc;
+      outline: none;
+      transition: width 0.3s ease, opacity 0.3s ease;
+      margin-left: 10px;
+      color: #333;
+    }
+
+    #buscador.activo {
+      width: 180px;
+      opacity: 1;
+    }
+
+    #filtro {
+      margin: 20px;
+      padding: 8px;
+      width: calc(100% - 40px);
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    #imagen-bienvenida {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      background: url('img/portada.jpg') no-repeat center center/cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 3em;
+      font-family: 'Dancing Script', cursive;
+      font-weight: bold;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+      opacity: 1;
+      transition: opacity 0.5s ease;
+      user-select: none;
+    }
+
+    #productos-contenedor {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      padding: 20px;
+      transition: all 0.5s ease;
+    }
+
+    .producto {
+      background: white;
+      padding: 10px;
+      text-align: center;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .producto:hover {
+      transform: translateY(-5px);
+    }
+
+    .producto img {
+      width: 220px;
+      height: 220px;
+      object-fit: cover;
+      border-radius: auto;
+    }
+
+    .btn {
+      background-color: #b7a99a;
+      color: white;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #9c8c7d;
+    }
+
+    footer {
+      margin-top: 40px;
+      background: #fff;
+      padding: 20px;
+      text-align: center;
+      color: #444;
+      border-top: 1px solid #ccc;
+    }
+
+    footer a {
+      color: #b7a99a;
+      text-decoration: none;
+    }
+
+    #formulario-compra {
+      padding: 20px;
+      display: none;
+    }
+
+    #mensaje-compra {
+      padding: 20px;
+      display: none;
+      text-align: center;
+      font-size: 1.2em;
+      color: #444;
+    }
+
+    @media (max-width: 900px) {
+      #productos-contenedor {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.8em;
+      }
+      #productos-contenedor {
+        grid-template-columns: 1fr;
+      }
+      .producto img {
+        height: 120px;
+      }
+      #buscador.activo {
+        width: 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>MakeUp Lagunilla</h1>
+
+    <div style="display:flex; align-items:center;">
+      <div id="buscador-container">
+        <button id="btn-lupa" aria-label="Buscar productos">&#128269;</button>
+        <input type="text" id="buscador" placeholder="Buscar productos..." autocomplete="off" />
+      </div>
+
+      <select id="filtro">
+        <option value="todos">Todos</option>
+        <option value="belleza">Maquillaje</option>
+        <option value="bisuteria">Bisutería</option>
+      </select>
+
+      <div class="icono-carrito" id="icono-carrito" aria-label="Carrito de compras" tabindex="0">
+        <img src="https://cdn-icons-png.flaticon.com/512/1170/1170678.png" alt="Carrito" />
+        <span id="contador-carrito">0</span>
+      </div>
+    </div>
+
+    <div id="carrito-container" role="region" aria-live="polite" aria-label="Contenido del carrito"></div>
+  </header>
+
+  <div id="imagen-bienvenida">¡Bienvenidos a MakeUp Lagunilla!</div>
+
+  <div id="productos-contenedor"></div>
+
+  <div id="formulario-compra">
+    <h2>Formulario de Compra</h2>
+    <label>Nombre:</label><br />
+    <input type="text" id="nombre-cliente" /><br /><br />
+    <label>Dirección de envío:</label><br />
+    <textarea id="direccion-envio" rows="3"></textarea><br /><br />
+    <button id="finalizar-compra" class="btn">Finalizar Compra</button>
+  </div>
+
+  <div id="mensaje-compra"></div>
+
+  <footer>
+    <p>Contacto: <a href="lagunillamakeup@gmail.com">lagunillamakeup@gmail.com</a> | Teléfono: 56-4610-8527</p>
+    <p>Dirección: Av. Lagunilla entre Republica de Brasil y Eje 1 Norte, Ciudad de México</p>
+    <iframe
+      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3763.423926465696!2d-99.13196398457219!3d19.447303486892906!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d1ff3f7a5b9b5b%3A0xf778b4eaa830c26a!2sMercado%20Lagunilla!5e0!3m2!1ses!2smx!4v1685100000000!5m2!1ses!2smx"
+      width="100%"
+      height="200"
+      style="border:0; border-radius: 10px;"
+      allowfullscreen=""
+      loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade"></iframe>
+  </footer>
+
+  <script>
+    const productos = [
+      {
+        id: 1,
+        nombre: "Athena beauty Brightening & Exfoliating Gel",
+        descripcion: "Exfoliante facial. Contenido: 75 ml",
+        precio: 35,
+        categoria: "belleza",
+        imagen: "img/1.jpg"
+      },
+      {
+        id: 2,
+        nombre: "Favorbeauty",
+        descripcion: "Jabón de arroz para aclarar Contenido: 1pz",
+        precio: 15,
+        categoria: "belleza",
+        imagen: "img/2.jpg",
+      },
+      {
+        id: 3,
+        nombre: "Favorbeauty",
+        descripcion: "Jabón exfoliante con ácido hialurónico Contenido:150ml",
+        precio: 45.0,
+        categoria: "belleza",
+        imagen: "img/3.jpg",
+      },
+      {
+        id: 4,
+        nombre: "Favorbeauty",
+        descripcion:  "Jabón exfoliante con extracto de miel",
+        precio: 45.0,
+        categoria: "belleza",
+        imagen: "img/4.jpg",
+      },
+      {
+        id: 5,
+        nombre: "BOEN/Cabaoly",
+        descripcion: "Mascarilla para skinker para el cuidado de la piel Contenido: 6 pz",
+        precio: 25.0,
+        categoria: "belleza",
+        imagen: "img/5.jpg",
+      },
+      {
+        id: 6,
+        nombre: "Lanbena",
+        descripcion: "Parches para puntos negros Contenido:30g",
+        precio: 55.0,
+        categoria: "belleza",
+        imagen: "img/6.jpg",
+      },
+      {
+        id: 7,
+        nombre: "Favorbeauty",
+        descripcion: "Brochas para maquillaje Contenido 5 brochas diferentes tamaños ",
+        precio: 35.0,
+        categoria: "belleza",
+        imagen: "img/7.jpg",
+      },
+      {
+        id: 8,
+        nombre: "Kabuki",
+        descripcion: "Brocha para polvo compacto Contenido: 1pz ",
+        precio: 20.0,
+        categoria: "belleza",
+        imagen: "img/8.jpg",
+      },
+      {
+        id: 9,
+        nombre: "Almohadilla",
+        descripcion: "Esponja desmaquillante Contenido: 5 pz",
+        precio: 10.0,
+        categoria: "belleza",
+        imagen: "img/9.jpg",
+      },
+      {
+        id: 10,
+        nombre: "Esponja",
+        descripcion: "Esponja para aplicar base Contenido: 1pz",
+        precio: 10.0,
+        categoria: "belleza",
+        imagen: "img/10.jpg",
+      },
+      {
+        id: 11,
+        nombre: "Favorbeauty ",
+        descripcion: "Polvo sellador de banana Contenido: 85g",
+        precio: 20.0,
+        categoria: "belleza",
+        imagen: "img/11.jpg",
+      },
+      {
+        id: 12,
+        nombre: "Polvo translúcido",
+        descripcion: "Polvo sellador de maquillaje Contenido: 30g",
+        precio: 35.0,
+        categoria: "belleza",
+        imagen: "img/12.jpg",
+      },
+
+      {
+        id: 13,
+        nombre: "Bissu",
+        descripcion: "Polvo compacto Contenido: 8g",
+        precio: 90.0,
+        categoria: "belleza",
+        imagen: "img/13.jpg",
+      },
+      {
+        id: 14,
+        nombre: "Busch líquido",
+        descripcion: "Bronceador liquido Contenido: 1 pz ",
+        precio: 20.0,
+        categoria: "belleza",
+        imagen: "img/14.jpg",
+      },
+      {
+        id: 15,
+        nombre: "Romantic rain",
+        descripcion: "Rubor líquido tonos rosas Contenido: 20ml",
+        precio: 55.0,
+        categoria: "belleza",
+        imagen: "img/15.jpg",
+      },
+      {
+        id: 16,
+        nombre: "Bissu",
+        descripcion:"Corrector para imperfecciones Contenido: 4.5g",
+        precio: 30.0,
+        categoria: "belleza",
+        imagen: "img/16.jpg",
+      },
+      {
+        id: 17,
+        nombre: "Iluminador",
+        descripcion: "Polvo de hadas Contenido: 2pz ",
+        precio: 20.0,
+        categoria: "belleza",
+        imagen: "img/17.jpg",
+      },
+      {
+        id: 18,
+        nombre: "Romantic rain",
+        descripcion: "Delineador en gel Contenido: 1pz",
+        precio: 15.0,
+        categoria: "belleza",
+        imagen: "img/18.jpg",
+      },
+      {
+        id: 19,
+        nombre: "Favorbeauty",
+        descripcion: "Sombra para cejas Contenido: 3 tonos",
+        precio: 15.0,
+        categoria: "belleza",
+        imagen: "img/19.jpg",
+      },
+      {
+        id: 20,
+        nombre: "Faborbeauty",
+        descripcion: "Paleta de sombras para ojos Contenido: 18 tonos",
+        precio: 30.0,
+        categoria: "belleza",
+        imagen: "img/20.jpg",
+      },
+      {
+        id: 21,
+        nombre: "Aceite de pestañas",
+        descripcion: "Aceite para el crecimiento de pestañas Contenido: 1pz",
+        precio: 45.0,
+        categoria: "belleza",
+        imagen: "img/21.jpg",
+      },
+      {
+        id: 22,
+        nombre: "Prossa",
+        descripcion: "Delineador líquido color negro Contenido: 1pz",
+        precio: 35.0,
+        categoria: "belleza",
+        imagen: "img/22.jpg",
+      },
+      {
+        id: 23,
+        nombre: "Prossa",
+        descripcion: "Rimer negros con diferentes cepillos Contenido: 1pz ",
+        precio: 35.0,
+        categoria: "belleza",
+        imagen: "img/23.jpg",
+      },
+      {
+        id: 24,
+        nombre: "Delineador",
+        descripcion: "Delineador en plumin Contenido: 1pz",
+        precio: 15.0,
+        categoria: "belleza",
+        imagen: "img/24.jpg",
+      },
+      {
+        id: 25,
+        nombre: "Labial",
+        descripcion: "Labial mate indeleble tonos rojisos Contenido: 1pz",
+        precio: 10.0,
+        categoria: "belleza",
+        imagen: "img/25.jpg",
+      },
+      {
+        id: 26,
+        nombre: "Kit de pestañas magnéticas",
+        descripcion: "Contenido: 3 pares de pestañas, aplicador y pegamento",
+        precio: 50.0,
+        categoria: "belleza",
+        imagen: "img/26.jpg",
+      },
+      {
+        id: 27,
+        nombre: "Favorbeauty",
+        descripcion: "Pestañas Contenido:1 par de pestañas (diferentes tamaños)",
+        precio: 10.0,
+        categoria: "belleza",
+        imagen: "img/27.jpg",
+      },
+      {
+        id: 28,
+        nombre: "Uñas postizas",
+        descripcion: "Diferentes modelos de uñas Contenido: 10 uñas más 2 repuestos",
+        precio: 35.0,
+        categoria: "belleza",
+        imagen: "img/28.jpg",
+      },
+      {
+        id: 29,
+        nombre: "Joyería",
+        descripcion: "Collar y aretes fantacia diferentes modelos Contenido: 1 Collar de pedreria y 1 par de aretes",
+        precio: 85.0,
+        categoria: "bisuteria",
+        imagen: "img/29.jpg",
+      },
+      {
+        id: 30,
+        nombre: "Tiaras",
+        descripcion: "Decoración para el cabello Contenido: 1pz ",
+        precio: 60.0,
+        categoria: "bisuteria",
+        imagen: "img/30.jpg",
+      },
+      {
+        id: 31,
+        nombre: "Diademas para niñas",
+        descripcion: "Coronas con liston para niñas de 5 años en adelante Contenido: 1pz ",
+        precio: 25.0,
+        categoria: "bisuteria",
+        imagen: "img/31.jpg",
+      },
+      {
+        id: 32,
+        nombre: "Tiaras",
+        descripcion: "Corona para peinados de eventos Contenido: 1pz ",
+        precio: 35.0,
+        categoria: "bisuteria",
+        imagen: "img/32.jpg",
+      },
+      {
+        id: 33,
+        nombre: "Moños",
+        descripcion: "Decoración coquet para el cabello diferentes colores Contenido: 1pz ",
+        precio: 15.0,
+        categoria: "bisuteria",
+        imagen: "img/33.jpg",
+      },
+      {
+        id: 34,
+        nombre: "Balerina con pedreria",
+        descripcion: "Contenido: 1pz",
+        precio: 20.0,
+        categoria: "bisuteria",
+        imagen: "img/34.jpg",
+      },
+      {
+        id: 35,
+        nombre: "Balerina",
+        descripcion: "Diademas de tela Contenido: 1pz ",
+        precio: 10.0,
+        categoria: "bisuteria",
+        imagen: "img/35.jpg",
+      },
+      {
+        id: 36,
+        nombre: "Ligas",
+        descripcion: "Ligas para el cabello diferentes colores Contenido: 100pz",
+        precio: 5.0,
+        categoria: "bisuteria",
+        imagen: "img/36.jpg",
+      },
+      {
+        id: 37,
+        nombre: "Cepillo",
+        descripcion: "Cepillo de cabello con serdas suaves",
+        precio: 20.0,
+        categoria: "bisuteria",
+        imagen: "img/37.jpg",
+      },
+    ];
+
+    let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+
+    const productosContenedor = document.getElementById("productos-contenedor");
+    const carritoContainer = document.getElementById("carrito-container");
+    const contadorCarrito = document.getElementById("contador-carrito");
+    const iconoCarrito = document.getElementById("icono-carrito");
+    const buscador = document.getElementById("buscador");
+    const btnLupa = document.getElementById("btn-lupa");
+    const filtro = document.getElementById("filtro");
+    const imagenBienvenida = document.getElementById("imagen-bienvenida");
+    const formularioCompra = document.getElementById("formulario-compra");
+    const mensajeCompra = document.getElementById("mensaje-compra");
+    const btnFinalizarCompra = document.getElementById("finalizar-compra");
+
+    function mostrarProductos(productosAMostrar) {
+      productosContenedor.innerHTML = "";
+      if (productosAMostrar.length === 0) {
+        productosContenedor.innerHTML = "<p>No se encontraron productos.</p>";
+        return;
+      }
+
+      productosAMostrar.forEach((producto) => {
+        const productoDiv = document.createElement("div");
+        productoDiv.classList.add("producto");
+        productoDiv.innerHTML = `
+          <img src="${producto.imagen}" alt="${producto.nombre}" />
+          <h3>${producto.nombre}</h3>
+          <p>${producto.descripcion}</p>
+          <p><strong>$${producto.precio.toFixed(2)}</strong></p>
+          <button class="btn" onclick="agregarAlCarrito(${producto.id})">Agregar al carrito</button>
+        `;
+        productosContenedor.appendChild(productoDiv);
+      });
+    }
+
+    function actualizarCarrito() {
+      carritoContainer.innerHTML = "";
+
+      if (carrito.length === 0) {
+        carritoContainer.innerHTML = "<p>Tu carrito está vacío.</p>";
+        contadorCarrito.textContent = "0";
+        return;
+      }
+
+      carrito.forEach((producto) => {
+        const item = document.createElement("div");
+        item.classList.add("carrito-item");
+
+        item.innerHTML = `
+          <img src="${producto.imagen}" alt="${producto.nombre}" />
+          <span>${producto.nombre}</span>
+          <input type="number" min="1" value="${producto.cantidad}" aria-label="Cantidad de ${producto.nombre}" />
+          <button aria-label="Eliminar ${producto.nombre}">X</button>
+        `;
+
+        const inputCantidad = item.querySelector("input");
+        const btnEliminar = item.querySelector("button");
+
+        inputCantidad.addEventListener("change", (e) => {
+          const cantidadNueva = parseInt(e.target.value);
+          if (isNaN(cantidadNueva) || cantidadNueva < 1) {
+            e.target.value = producto.cantidad;
+            return;
+          }
+          producto.cantidad = cantidadNueva;
+          guardarCarrito();
+          actualizarCarrito();
+        });
+
+        btnEliminar.addEventListener("click", () => {
+          carrito = carrito.filter((p) => p.id !== producto.id);
+          guardarCarrito();
+          actualizarCarrito();
+        });
+
+        carritoContainer.appendChild(item);
+      });
+
+      const total = carrito.reduce(
+        (acc, producto) => acc + producto.precio * producto.cantidad,
+        0
+      );
+
+      const totalDiv = document.createElement("div");
+      totalDiv.style.fontWeight = "bold";
+      totalDiv.style.marginTop = "10px";
+      totalDiv.textContent = `Total: $${total.toFixed(2)}`;
+      carritoContainer.appendChild(totalDiv);
+
+      // Botón proceder al pago
+      const botonPagar = document.createElement("button");
+      botonPagar.textContent = "Proceder al pago";
+      botonPagar.className = "btn";
+      botonPagar.style.marginTop = "10px";
+      botonPagar.addEventListener("click", () => {
+        carritoContainer.style.display = "none";
+        formularioCompra.style.display = "block";
+        mensajeCompra.style.display = "none";
+      });
+      carritoContainer.appendChild(botonPagar);
+
+      // Actualizar contador carrito
+      const cantidadTotal = carrito.reduce((acc, p) => acc + p.cantidad, 0);
+      contadorCarrito.textContent = cantidadTotal;
+    }
+
+    function agregarAlCarrito(idProducto) {
+      const productoEncontrado = productos.find((p) => p.id === idProducto);
+      if (!productoEncontrado) return;
+
+      const productoEnCarrito = carrito.find((p) => p.id === idProducto);
+      if (productoEnCarrito) {
+        productoEnCarrito.cantidad++;
+      } else {
+        carrito.push({ ...productoEncontrado, cantidad: 1 });
+      }
+      guardarCarrito();
+      actualizarCarrito();
+    }
+
+    function guardarCarrito() {
+      localStorage.setItem("carrito", JSON.stringify(carrito));
+    }
+
+    // Mostrar productos iniciales
+    mostrarProductos(productos);
+    actualizarCarrito();
+
+    // Buscador expandible
+    btnLupa.addEventListener("click", () => {
+      buscador.classList.toggle("activo");
+      if (buscador.classList.contains("activo")) {
+        buscador.focus();
+      } else {
+        buscador.value = "";
+        mostrarProductos(productos);
+        filtro.value = "todos";
+        imagenBienvenida.style.opacity = "1";
+      }
+    });
+
+    buscador.addEventListener("input", () => {
+      const texto = buscador.value.toLowerCase();
+      const productosFiltrados = productos.filter((producto) =>
+        producto.nombre.toLowerCase().includes(texto)
+      );
+      mostrarProductos(productosFiltrados);
+      filtro.value = "todos";
+
+      // Mostrar u ocultar imagen bienvenida
+      if (productosFiltrados.length === 0) {
+        imagenBienvenida.style.opacity = "1";
+      } else {
+        imagenBienvenida.style.opacity = "0";
+      }
+    });
+
+    // Filtro por categoría
+    filtro.addEventListener("change", () => {
+      const categoria = filtro.value;
+      if (categoria === "todos") {
+        mostrarProductos(productos);
+      } else {
+        mostrarProductos(productos.filter((p) => p.categoria === categoria));
+      }
+
+      buscador.value = "";
+      if (categoria === "todos") {
+        imagenBienvenida.style.opacity = "1";
+      } else {
+        imagenBienvenida.style.opacity = "0";
+      }
+    });
+
+    // Mostrar / ocultar carrito al hacer clic en el icono
+    iconoCarrito.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (carritoContainer.style.display === "block") {
+        carritoContainer.style.display = "none";
+      } else {
+        carritoContainer.style.display = "block";
+        formularioCompra.style.display = "none";
+        mensajeCompra.style.display = "none";
+      }
+    });
+
+    // Cerrar carrito si se hace clic fuera de él o del icono
+    document.addEventListener("click", () => {
+      carritoContainer.style.display = "none";
+      formularioCompra.style.display = "none";
+      mensajeCompra.style.display = "none";
+    });
+
+    carritoContainer.addEventListener("click", (e) => {
+      e.stopPropagation();
+    });
+
+    formularioCompra.addEventListener("click", (e) => {
+      e.stopPropagation();
+    });
+
+    // Finalizar compra
+    btnFinalizarCompra.addEventListener("click", () => {
+      const nombre = document.getElementById("nombre-cliente").value.trim();
+      const direccion = document.getElementById("direccion-envio").value.trim();
+
+      if (!nombre || !direccion) {
+        alert("Por favor, completa todos los campos.");
+        return;
+      }
+
+      // Simular procesamiento de compra
+      carrito = [];
+      guardarCarrito();
+      actualizarCarrito();
+
+      formularioCompra.style.display = "none";
+      mensajeCompra.style.display = "block";
+      mensajeCompra.textContent = `Gracias por tu compra, ${nombre}. Tu pedido será enviado a: ${direccion}`;
+    });
+  </script>
+</body>
+</html>
